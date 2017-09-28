@@ -88,7 +88,7 @@ int main() {
 		mvprintw(0,0,"Please use a larger terminal for this program.\nPress any key to continue.");
 		cbreak();
 		getch();
-		quit = true;
+		endwin();
 	}
 
 	WINDOW * MapWindow = newwin(25,50,0,0);
