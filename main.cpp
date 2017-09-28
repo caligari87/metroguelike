@@ -186,9 +186,10 @@ int main() {
 				int CheckY = (double)0.5 + Player.Y + (Dist*sin(Angle*PI/180));
 				int CheckX = (double)0.5 + Player.X + (Dist*cos(Angle*PI/180));
 				if(CheckX<0 || CheckX>MaxCols || CheckY<0 or CheckY>MaxRows) { break; }
-				//if(Map[CheckY][CheckX].VisibleChecked == true) { break; }
+				if(Map[CheckY][CheckX].IsWall() == true || Map[CheckY][CheckX].IsDoor() == true) {
+					Map[CheckY][CheckX].Seen = true;
+				}
 				Map[CheckY][CheckX].Visible = true;
-				//Map[CheckY][CheckX].VisibleChecked = true;
 				if(Map[CheckY][CheckX].BlocksVision == true) { break; }
 			}
 		}
@@ -196,10 +197,12 @@ int main() {
 		//Render map
 		for(int Y=0; Y<MaxRows; Y++) {
 			for(int X=0; X<MaxCols; X++) {
-				if(Map[Y][X].Visible == true) {
+				if(Map[Y][X].Seen == true || Map[Y][X].Visible == true) {
 					mvwaddch(MapWindow,Y,X,Map[Y][X].Symbol);
 				}
-				else { mvwaddch(MapWindow,Y,X,' '); }
+				else {
+					mvwaddch(MapWindow,Y,X,' ');
+				}
 			}
 		}
 		mvwaddch(MapWindow,Player.Y,Player.X,Player.Symbol);
