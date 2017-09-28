@@ -70,7 +70,7 @@ int main() {
 	int MaxRows = 25;
 	int MaxCols = 50;
 	int InKey;
-	bool quit = false;
+	bool Quit = false;
 
 	Actor Player;
 	Player.Y = MaxRows/2;
@@ -171,7 +171,7 @@ int main() {
 		}
 	}
 
-	while(!quit) {
+	while(!Quit) {
 		//Set map to all nonvisible;
 		for(int Y=0; Y<MaxRows; Y++) {
 			for(int X=0; X<MaxCols; X++) {
@@ -242,7 +242,7 @@ int main() {
 				}
 				break;
 			case('Q'):
-				quit=true;
+				Quit=true;
 				break;
 			default:
 				break;
