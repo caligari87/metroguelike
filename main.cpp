@@ -123,34 +123,47 @@ int main() {
 	}*/
 	
 	//Make DoomRL-style "rooms" map
-	int MadeWalls = 0;
-	while(MadeWalls<10) {
-		int StartY = irandom(1,MaxRows-1);
-		int StartX = irandom(1,MaxCols-1);
-		if(Map[StartY][StartX].IsDoor() == false &&
-		   Map[StartY-1][StartX].IsWall() == false &&
-		   Map[StartY+1][StartX].IsWall() == false &&
-		   Map[StartY][StartX-1].IsWall() == false &&
-		   Map[StartY][StartX+1].IsWall() == false) {
+	int MadeWalls = 0; //How many walls we've finished
+	int WallAttempts = 0; //How many walls we've tried to make
+	while(MadeWalls<10 || WallAttempts<100) {
+		WallAttempts++;
+		bool DoBuild = true; //Actually build the walls
+		int StartY = irandom(2,MaxRows-2);
+		int StartX = irandom(2,MaxCols-2);
+		if(Map[StartY][StartX].IsWall() == true || Map[StartY][StartX].IsDoor() == true) {
 			Map[StartY][StartX].SetDoor();
-			if(irandom(0,2)==0) {
+			DoBuild = false;
+			MadeWalls++;
+		}
+		for(int CheckAround=1; CheckAround<=3; CheckAround++) {
+			if(Map[StartY-CheckAround][StartX].IsWall() == true || Map[StartY-CheckAround][StartX].IsDoor() == true ||
+			   Map[StartY+CheckAround][StartX].IsWall() == true || Map[StartY+CheckAround][StartX].IsDoor() == true ||
+			   Map[StartY][StartX-CheckAround].IsWall() == true || Map[StartY][StartX-CheckAround].IsDoor() == true ||
+			   Map[StartY][StartX+CheckAround].IsWall() == true || Map[StartY][StartX+CheckAround].IsDoor() == true) {
+			   	DoBuild=false;
+			   	break;
+			}
+		}		
+		if(DoBuild==true) {
+			Map[StartY][StartX].SetDoor();
+			if(irandom(0,1)==0) {
 				for(int X=StartX-1; X>0; X--) {
-					if(Map[StartY][X].IsWall()==true) { break; }
+					if(Map[StartY][X].IsWall()==true || Map[StartY][X].IsDoor() == true) { break; }
 					Map[StartY][X].SetWall();
 				}
 				for(int X=StartX+1; X<MaxCols; X++) {
-					if(Map[StartY][X].IsWall()==true) { break; }
+					if(Map[StartY][X].IsWall()==true || Map[StartY][X].IsDoor() == true) { break; }
 					Map[StartY][X].SetWall();
 				}
 				MadeWalls++;
 			}
 			else {
 				for(int Y=StartY-1; Y>0; Y--) {
-					if(Map[Y][StartX].IsWall()==true) { break; }
+					if(Map[Y][StartX].IsWall()==true || Map[Y][StartX].IsDoor() == true) { break; }
 					Map[Y][StartX].SetWall();
 				}
 				for(int Y=StartY+1; Y<MaxRows; Y++) {
-					if(Map[Y][StartX].IsWall()==true) { break; }
+					if(Map[Y][StartX].IsWall()==true || Map[Y][StartX].IsDoor() == true) { break; }
 					Map[Y][StartX].SetWall();
 				}
 				MadeWalls++;
