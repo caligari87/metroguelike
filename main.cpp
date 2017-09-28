@@ -140,10 +140,10 @@ int main() {
 			   Map[StartY+CheckAround][StartX].IsWall() == true || Map[StartY+CheckAround][StartX].IsDoor() == true ||
 			   Map[StartY][StartX-CheckAround].IsWall() == true || Map[StartY][StartX-CheckAround].IsDoor() == true ||
 			   Map[StartY][StartX+CheckAround].IsWall() == true || Map[StartY][StartX+CheckAround].IsDoor() == true) {
-			   	DoBuild=false;
-			   	break;
+				DoBuild=false;
+				break;
 			}
-		}		
+		}
 		if(DoBuild==true) {
 			Map[StartY][StartX].SetDoor();
 			if(irandom(0,1)==0) {
