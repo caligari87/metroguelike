@@ -213,7 +213,7 @@ int main() {
 
 		//Render Messages/Status
 		wmove(MsgWindow,0,0);
-		wvline(MsgWindow,0,25);
+		wvline(MsgWindow,0,MaxRows);
 		mvwprintw(MsgWindow,0,1,"Health: %i",Player.Health);
 		mvwprintw(MsgWindow,1,1,"Energy: %i",Player.Energy);
 		wrefresh(MsgWindow);
