@@ -141,6 +141,9 @@ int main() {
 			   Map[StartY][StartX-CheckAround].IsWall() == true || Map[StartY][StartX-CheckAround].IsDoor() == true ||
 			   Map[StartY][StartX+CheckAround].IsWall() == true || Map[StartY][StartX+CheckAround].IsDoor() == true) {
 				DoBuild=false;
+				if(CheckAround>=2) {
+					Map[StartY][StartX].SetWall();
+				}
 				break;
 			}
 		}
