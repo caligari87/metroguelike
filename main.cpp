@@ -44,7 +44,6 @@ class Tile {
 		}
 };
 
-
 class Actor {
 	public:
 		int X,Y;
@@ -217,7 +216,6 @@ int main() {
 		mvwprintw(MsgWindow,0,1,"Health: %i",Player.Health);
 		mvwprintw(MsgWindow,1,1,"Energy: %i",Player.Energy);
 		wrefresh(MsgWindow);
-
 
 		//Player.OldY = Player.Y;
 		//Player.OldX = Player.X;
