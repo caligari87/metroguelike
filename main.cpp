@@ -67,7 +67,7 @@ void InitializeTerminal() {
 int main() {
 	srand(time(NULL));
 
-	int MaxRows = 25;
+	int MaxRows = 24;
 	int MaxCols = 50;
 	int InKey;
 	bool Quit = false;
@@ -121,7 +121,7 @@ int main() {
 	int X=irandom(0,MaxCols-1);
 	Map[Y][X].SetWall();
 	}*/
-	
+
 	//Make DoomRL-style "rooms" map
 	int MadeWalls = 0; //How many walls we've finished
 	int WallAttempts = 0; //How many walls we've tried to make
