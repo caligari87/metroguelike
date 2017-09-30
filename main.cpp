@@ -47,7 +47,6 @@ class Tile {
 class Actor {
 	public:
 		int X,Y;
-		int OldX,OldY;
 		char Symbol;
 
 		int Health;
