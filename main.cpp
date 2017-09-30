@@ -52,6 +52,24 @@ class Actor {
 
 		int Health;
 		int Energy;
+
+		Actor *Target = NULL;
+
+		void ChaseTarget() {
+			if(Target == NULL) { return; }
+			if(X < Target->X) {
+				X++;
+			}
+			if(X > Target->X) {
+				X--;
+			}
+			if(Y < Target->Y) {
+				Y++;
+			}
+			if(Y > Target->Y) {
+				Y--;
+			}
+		}
 };
 
 void InitializeTerminal() {
@@ -234,6 +252,7 @@ int main() {
 		for(int i=0; i<=9; i++) {
 			if(Map[Monsters[i].Y][Monsters[i].X].Visible == true) {
 				mvwaddch(MapWindow,Monsters[i].Y,Monsters[i].X,Monsters[i].Symbol);
+				Monsters[i].Target = &Player;
 			}
 		}
 		mvwaddch(MapWindow,Player.Y,Player.X,Player.Symbol);
@@ -278,6 +297,11 @@ int main() {
 				break;
 			default:
 				break;
+		}
+
+		//Monsters get their turn
+		for(int i=0; i<=9; i++) {
+			Monsters[i].ChaseTarget();
 		}
 	}
 	endwin();
