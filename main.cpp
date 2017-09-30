@@ -56,6 +56,13 @@ class Actor {
 
 		Actor *Target = nullptr;
 
+		void TryMove(int NewY, int NewX, Tile CheckMap[MaxRows][MaxCols]) {
+			if(CheckMap[NewY][NewX].IsWall() == false) {
+				Y = NewY;
+				X = NewX;
+			}
+		}
+
 		void ChaseTarget() {
 			if(Target == nullptr) { return; }
 			if(X < Target->X) {
@@ -268,28 +275,20 @@ int main() {
 		InKey=getch();
 		switch(InKey) {
 			case(KEY_UP):
-				if(Map[Player.Y-1][Player.X].CanWalk) {
-					Player.Y--;
-					Player.Energy--;
-				}
+				Player.Energy--;
+				Player.TryMove(Player.Y-1, Player.X, Map);
 				break;
 			case(KEY_DOWN):
-				if(Map[Player.Y+1][Player.X].CanWalk) {
-					Player.Y++;
-					Player.Energy--;
-				}
+				Player.Energy--;
+				Player.TryMove(Player.Y+1, Player.X, Map);
 				break;
 			case(KEY_LEFT):
-				if(Map[Player.Y][Player.X-1].CanWalk) {
-					Player.X--;
-					Player.Energy--;
-				}
+				Player.Energy--;
+				Player.TryMove(Player.Y, Player.X-1, Map);
 				break;
 			case(KEY_RIGHT):
-				if(Map[Player.Y][Player.X+1].CanWalk) {
-					Player.X++;
-					Player.Energy--;
-				}
+				Player.Energy--;
+				Player.TryMove(Player.Y, Player.X+1, Map);
 				break;
 			case('Q'):
 				Quit=true;
