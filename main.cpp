@@ -53,10 +53,10 @@ class Actor {
 		int Health;
 		int Energy;
 
-		Actor *Target = NULL;
+		Actor *Target = nullptr;
 
 		void ChaseTarget() {
-			if(Target == NULL) { return; }
+			if(Target == nullptr) { return; }
 			if(X < Target->X) {
 				X++;
 			}
@@ -82,7 +82,7 @@ void InitializeTerminal() {
 }
 
 int main() {
-	srand(time(NULL)); //Seed random
+	srand(time(nullptr)); //Seed random
 
 	//Set core variables
 	int MaxRows = 24;
