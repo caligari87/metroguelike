@@ -5,6 +5,8 @@
 #include "random.cpp"
 
 #define PI 3.14159265
+const int MaxRows = 24;
+const int MaxCols = 50;
 
 class Tile {
 	public:
@@ -84,8 +86,6 @@ int main() {
 	srand(time(nullptr)); //Seed random
 
 	//Set core variables
-	int MaxRows = 24;
-	int MaxCols = 50;
 	int InKey;
 	bool Quit = false;
 
