@@ -64,32 +64,15 @@ void InitializeTerminal() {
 }
 
 int main() {
-	srand(time(NULL));
+	srand(time(NULL)); //Seed random
 
+	//Set core variables
 	int MaxRows = 24;
 	int MaxCols = 50;
 	int InKey;
 	bool Quit = false;
 
-	Actor Player;
-	Player.Y = MaxRows/2;
-	Player.X = MaxCols/2;
-	Player.Symbol = '@';
-	Player.Health = 100;
-	Player.Energy = 2000;
-
-	Actor Monsters[10];
-	for(int i=0; i<=9; i++) {
-		Monsters[i].Y = irandom(5,MaxRows);
-		Monsters[i].X = irandom(5,MaxCols);
-		Monsters[i].Symbol = 'G';
-		Monsters[i].Health = 100;
-		Monsters[i].Energy = 1000;
-	}
-
-	Tile Map[MaxRows][MaxCols];
-	//Map[][].SetFloor();
-
+	//Terminal setup and initialization
 	InitializeTerminal();
 	//Check that the terminal is big enough
 	if(getmaxx(stdscr)<MaxCols || getmaxy(stdscr)<MaxRows) {
@@ -99,19 +82,25 @@ int main() {
 		endwin();
 	}
 
+	//Set up UI "windows"
 	WINDOW * MapWindow = newwin(25,50,0,0);
 	WINDOW * MsgWindow = newwin(25,30,0,50);
 	refresh();
 
+	//Debug boundaries
 	box(MapWindow,0,0);
 	box(MsgWindow,0,0);
 	wrefresh(MapWindow);
 	wrefresh(MsgWindow);
 
+	//Wait for keypress
 	getch();
 	//clean screen
 	clear();
 	refresh();
+
+	//Initialize map
+	Tile Map[MaxRows][MaxCols];
 
 	//Make map borders
 	for(int Y=0; Y<MaxRows; Y++) {
@@ -123,26 +112,22 @@ int main() {
 		Map[MaxRows-1][X].SetWall();
 	}
 
-	/*Make random map
-	for(int i=0; i<(MaxRows*MaxCols*0.25); i++) {
-	int Y=irandom(0,MaxRows-1);
-	int X=irandom(0,MaxCols-1);
-	Map[Y][X].SetWall();
-	}*/
-
 	//Make DoomRL-style "rooms" map
 	int MadeWalls = 0; //How many walls we've finished
 	int WallAttempts = 0; //How many walls we've tried to make
 	while(MadeWalls<10 || WallAttempts<100) {
 		WallAttempts++;
-		bool DoBuild = true; //Actually build the walls
+		bool DoBuild = true;
+		//Pick a random spot
 		int StartY = irandom(2,MaxRows-2);
 		int StartX = irandom(2,MaxCols-2);
+		//Abort and increment if spot is a door/wall
 		if(Map[StartY][StartX].IsWall() == true || Map[StartY][StartX].IsDoor() == true) {
 			Map[StartY][StartX].SetDoor();
 			DoBuild = false;
 			MadeWalls++;
 		}
+		//Check sufficient space for "nice" wall placement
 		for(int CheckAround=1; CheckAround<=3; CheckAround++) {
 			if(Map[StartY-CheckAround][StartX].IsWall() == true || Map[StartY-CheckAround][StartX].IsDoor() == true ||
 			   Map[StartY+CheckAround][StartX].IsWall() == true || Map[StartY+CheckAround][StartX].IsDoor() == true ||
@@ -155,6 +140,7 @@ int main() {
 				break;
 			}
 		}
+		//Actually build the walls outward from door location
 		if(DoBuild==true) {
 			Map[StartY][StartX].SetDoor();
 			if(irandom(0,1)==0) {
@@ -182,6 +168,33 @@ int main() {
 		}
 	}
 
+	//Initialize player
+	Actor Player;
+	do {
+		Player.Y = irandom(5,MaxRows-5);
+		Player.X = irandom(5,MaxCols-5);
+	}
+	while(Map[Player.Y][Player.X].CanWalk == false);
+	Player.Symbol = '@';
+	Player.Health = 100;
+	Player.Energy = 2000;
+
+	//Initialize monsters
+	Actor Monsters[10];
+	for(int i=0; i<=9; i++) {
+		do {
+			Monsters[i].Y = irandom(5,MaxRows-5);
+			Monsters[i].X = irandom(5,MaxCols-5);
+		}
+		while(Map[Monsters[i].Y][Monsters[i].X].CanWalk == false);
+		Monsters[i].Symbol = 'G';
+		Monsters[i].Health = 100;
+		Monsters[i].Energy = 1000;
+	}
+
+	//--------------------------------
+	//Main loop
+	//--------------------------------
 	while(!Quit) {
 		//Set map to all nonvisible;
 		for(int Y=0; Y<MaxRows; Y++) {
@@ -233,8 +246,7 @@ int main() {
 		mvwprintw(MsgWindow,1,1,"Energy: %i",Player.Energy);
 		wrefresh(MsgWindow);
 
-		//Player.OldY = Player.Y;
-		//Player.OldX = Player.X;
+		//Player input checks
 		InKey=getch();
 		switch(InKey) {
 			case(KEY_UP):
