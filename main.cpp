@@ -78,6 +78,15 @@ int main() {
 	Player.Health = 100;
 	Player.Energy = 2000;
 
+	Actor Monsters[10];
+	for(int i=0; i<=9; i++) {
+		Monsters[i].Y = irandom(5,MaxRows);
+		Monsters[i].X = irandom(5,MaxCols);
+		Monsters[i].Symbol = 'G';
+		Monsters[i].Health = 100;
+		Monsters[i].Energy = 1000;
+	}
+
 	Tile Map[MaxRows][MaxCols];
 	//Map[][].SetFloor();
 
@@ -205,6 +214,13 @@ int main() {
 				else {
 					mvwaddch(MapWindow,Y,X,' ');
 				}
+			}
+		}
+
+		//Render actors
+		for(int i=0; i<=9; i++) {
+			if(Map[Monsters[i].Y][Monsters[i].X].Visible == true) {
+				mvwaddch(MapWindow,Monsters[i].Y,Monsters[i].X,Monsters[i].Symbol);
 			}
 		}
 		mvwaddch(MapWindow,Player.Y,Player.X,Player.Symbol);
