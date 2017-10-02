@@ -8,7 +8,7 @@
 const int MaxRows = 24;
 const int MaxCols = 50;
 
-class Tile {
+class TileData {
 	public:
 		//Set everything to "floor" initially
 		bool CanWalk=true;
@@ -17,32 +17,73 @@ class Tile {
 
 		bool Seen=false;
 		bool Visible=false;
-		bool VisibleChecked=false;
+};
 
-		void SetWall() {
-			CanWalk = false;
-			BlocksVision = true;
-			Symbol = '#';
+class MapData {
+	public:
+		TileData Tiles[MaxRows*MaxCols];
+
+		bool IsWall(int row, int col) {
+			return(!Tiles[row+col*MaxRows].CanWalk &&
+					Tiles[row+col*MaxRows].BlocksVision &&
+					Tiles[row+col*MaxRows].Symbol=='#');
 		}
 
-		void SetFloor() {
-			CanWalk = true;
-			BlocksVision = false;
-			Symbol = '.';
+		bool IsDoor(int row, int col) {
+			return(Tiles[row+col*MaxRows].CanWalk &&
+				   Tiles[row+col*MaxRows].BlocksVision);
 		}
 
-		void SetDoor() {
-			CanWalk = true;
-			BlocksVision = true;
-			Symbol = '+';
+		bool CanWalk(int row, int col) {
+			return(Tiles[row+col*MaxRows].CanWalk);
 		}
 
-		bool IsDoor() {
-			return(CanWalk && BlocksVision);
+		bool BlocksVision(int row, int col) {
+			return(Tiles[row+col*MaxRows].BlocksVision);
 		}
 
-		bool IsWall() {
-			return(!CanWalk && BlocksVision && Symbol=='#');
+		bool Seen(int row, int col) {
+			return(Tiles[row+col*MaxRows].Seen);
+		}
+
+		bool Visible(int row, int col) {
+			return(Tiles[row+col*MaxRows].Visible);
+		}
+
+		char Symbol(int row, int col) {
+			return(Tiles[row+col*MaxRows].Symbol);
+		}
+
+		void SetWall(int row, int col) {
+			Tiles[row+col*MaxRows].CanWalk = false;
+			Tiles[row+col*MaxRows].BlocksVision = true;
+			Tiles[row+col*MaxRows].Symbol = '#';
+		}
+
+		void SetFloor(int row, int col) {
+			Tiles[row+col*MaxRows].CanWalk = true;
+			Tiles[row+col*MaxRows].BlocksVision = false;
+			Tiles[row+col*MaxRows].Symbol = '.';
+		}
+
+		void SetDoor(int row, int col) {
+			Tiles[row+col*MaxRows].CanWalk = true;
+			Tiles[row+col*MaxRows].BlocksVision = true;
+			Tiles[row+col*MaxRows].Symbol = '+';
+		}
+
+		void SetAllNotVisible() {
+			for(int i=0; i<MaxRows*MaxCols; i++) {
+				Tiles[i].Visible = false;
+			}
+		}
+
+		void SetVisibleState(int row, int col, bool value) {
+			Tiles[row+col*MaxRows].Visible = value;
+		}
+
+		void SetSeenState(int row, int col, bool value) {
+			Tiles[row+col*MaxRows].Seen = value;
 		}
 };
 
@@ -54,10 +95,12 @@ class Actor {
 		int Health;
 		int Energy;
 
+		MapData LocalMap;
+
 		Actor *Target = nullptr;
 
-		void TryMove(int NewY, int NewX, Tile CheckMap[MaxRows][MaxCols]) {
-			if(CheckMap[NewY][NewX].IsWall() == false) {
+		void TryMove(int NewY, int NewX) {
+			if(LocalMap.IsWall(NewY,NewX) == false) {
 				Y = NewY;
 				X = NewX;
 			}
@@ -124,16 +167,16 @@ int main() {
 	refresh();
 
 	//Initialize map
-	Tile Map[MaxRows][MaxCols];
+	MapData Map;
 
 	//Make map borders
 	for(int Y=0; Y<MaxRows; Y++) {
-		Map[Y][0].SetWall();
-		Map[Y][MaxCols-1].SetWall();
+		Map.SetWall(Y,0);
+		Map.SetWall(Y,MaxCols-1);
 	}
 	for(int X=0; X<MaxCols; X++) {
-		Map[0][X].SetWall();
-		Map[MaxRows-1][X].SetWall();
+		Map.SetWall(0,X);
+		Map.SetWall(MaxRows-1,X);
 	}
 
 	//Make DoomRL-style "rooms" map
@@ -146,46 +189,46 @@ int main() {
 		int StartY = irandom(2,MaxRows-2);
 		int StartX = irandom(2,MaxCols-2);
 		//Abort and increment if spot is a door/wall
-		if(Map[StartY][StartX].IsWall() == true || Map[StartY][StartX].IsDoor() == true) {
-			Map[StartY][StartX].SetDoor();
+		if(Map.IsWall(StartY,StartX) == true || Map.IsDoor(StartY,StartX) == true) {
+			Map.SetDoor(StartY,StartX);
 			DoBuild = false;
 			MadeWalls++;
 		}
 		//Check sufficient space for "nice" wall placement
 		for(int CheckAround=1; CheckAround<=3; CheckAround++) {
-			if(Map[StartY-CheckAround][StartX].IsWall() == true || Map[StartY-CheckAround][StartX].IsDoor() == true ||
-			   Map[StartY+CheckAround][StartX].IsWall() == true || Map[StartY+CheckAround][StartX].IsDoor() == true ||
-			   Map[StartY][StartX-CheckAround].IsWall() == true || Map[StartY][StartX-CheckAround].IsDoor() == true ||
-			   Map[StartY][StartX+CheckAround].IsWall() == true || Map[StartY][StartX+CheckAround].IsDoor() == true) {
+			if(Map.IsWall(StartY-CheckAround,StartX) == true || Map.IsDoor(StartY-CheckAround,StartX) == true ||
+			   Map.IsWall(StartY+CheckAround,StartX) == true || Map.IsDoor(StartY+CheckAround,StartX) == true ||
+			   Map.IsWall(StartY,StartX-CheckAround) == true || Map.IsDoor(StartY,StartX-CheckAround) == true ||
+			   Map.IsWall(StartY,StartX+CheckAround) == true || Map.IsDoor(StartY,StartX+CheckAround) == true) {
 				DoBuild=false;
 				if(CheckAround>=2) {
-					Map[StartY][StartX].SetWall();
+					Map.SetWall(StartY,StartX);
 				}
 				break;
 			}
 		}
 		//Actually build the walls outward from door location
 		if(DoBuild==true) {
-			Map[StartY][StartX].SetDoor();
+			Map.SetDoor(StartY,StartX);
 			if(irandom(0,1)==0) {
 				for(int X=StartX-1; X>0; X--) {
-					if(Map[StartY][X].IsWall()==true || Map[StartY][X].IsDoor() == true) { break; }
-					Map[StartY][X].SetWall();
+					if(Map.IsWall(StartY,X)==true || Map.IsDoor(StartY,X) == true) { break; }
+					Map.SetWall(StartY,X);
 				}
 				for(int X=StartX+1; X<MaxCols; X++) {
-					if(Map[StartY][X].IsWall()==true || Map[StartY][X].IsDoor() == true) { break; }
-					Map[StartY][X].SetWall();
+					if(Map.IsWall(StartY,X)==true || Map.IsDoor(StartY,X) == true) { break; }
+					Map.SetWall(StartY,X);
 				}
 				MadeWalls++;
 			}
 			else {
 				for(int Y=StartY-1; Y>0; Y--) {
-					if(Map[Y][StartX].IsWall()==true || Map[Y][StartX].IsDoor() == true) { break; }
-					Map[Y][StartX].SetWall();
+					if(Map.IsWall(Y,StartX)==true || Map.IsDoor(Y,StartX) == true) { break; }
+					Map.SetWall(Y,StartX);
 				}
 				for(int Y=StartY+1; Y<MaxRows; Y++) {
-					if(Map[Y][StartX].IsWall()==true || Map[Y][StartX].IsDoor() == true) { break; }
-					Map[Y][StartX].SetWall();
+					if(Map.IsWall(Y,StartX)==true || Map.IsDoor(Y,StartX) == true) { break; }
+					Map.SetWall(Y,StartX);
 				}
 				MadeWalls++;
 			}
@@ -198,10 +241,11 @@ int main() {
 		Player.Y = irandom(5,MaxRows-5);
 		Player.X = irandom(5,MaxCols-5);
 	}
-	while(Map[Player.Y][Player.X].CanWalk == false);
+	while(Map.CanWalk(Player.Y,Player.X) == false);
 	Player.Symbol = '@';
 	Player.Health = 100;
 	Player.Energy = 2000;
+	Player.LocalMap = Map;
 
 	//Initialize monsters
 	Actor Monsters[10];
@@ -210,43 +254,37 @@ int main() {
 			Monsters[i].Y = irandom(5,MaxRows-5);
 			Monsters[i].X = irandom(5,MaxCols-5);
 		}
-		while(Map[Monsters[i].Y][Monsters[i].X].CanWalk == false);
+		while(Map.CanWalk(Monsters[i].Y,Monsters[i].X) == false);
 		Monsters[i].Symbol = 'G';
 		Monsters[i].Health = 100;
 		Monsters[i].Energy = 1000;
+		Monsters[i].LocalMap = Map;
 	}
 
 	//--------------------------------
 	//Main loop
 	//--------------------------------
 	while(!Quit) {
-		//Set map to all nonvisible;
-		for(int Y=0; Y<MaxRows; Y++) {
-			for(int X=0; X<MaxCols; X++) {
-				Map[Y][X].Visible = false;
-				Map[Y][X].VisibleChecked = false;
-			}
-		}
-
+		Map.SetAllNotVisible();
 		//Player FOV check
 		for(double Angle=0;Angle<360;Angle+=0.1) {
 			for(int Dist=1;Dist<25;Dist++) {
 				int CheckY = (double)0.5 + Player.Y + (Dist*sin(Angle*PI/180));
 				int CheckX = (double)0.5 + Player.X + (Dist*cos(Angle*PI/180));
 				if(CheckX<0 || CheckX>MaxCols || CheckY<0 or CheckY>MaxRows) { break; }
-				if(Map[CheckY][CheckX].IsWall() == true || Map[CheckY][CheckX].IsDoor() == true) {
-					Map[CheckY][CheckX].Seen = true;
+				if(Map.IsWall(CheckY,CheckX) == true || Map.IsDoor(CheckY,CheckX) == true) {
+					Map.SetSeenState(CheckY,CheckX, true);
 				}
-				Map[CheckY][CheckX].Visible = true;
-				if(Map[CheckY][CheckX].BlocksVision == true) { break; }
+				Map.SetVisibleState(CheckY,CheckX,true);
+				if(Map.BlocksVision(CheckY,CheckX) == true) { break; }
 			}
 		}
 
 		//Render map
 		for(int Y=0; Y<MaxRows; Y++) {
 			for(int X=0; X<MaxCols; X++) {
-				if(Map[Y][X].Seen == true || Map[Y][X].Visible == true) {
-					mvwaddch(MapWindow,Y,X,Map[Y][X].Symbol);
+				if(Map.Seen(Y,X) == true || Map.Visible(Y,X) == true) {
+					mvwaddch(MapWindow,Y,X,Map.Symbol(Y,X));
 				}
 				else {
 					mvwaddch(MapWindow,Y,X,' ');
@@ -256,7 +294,7 @@ int main() {
 
 		//Render actors
 		for(int i=0; i<=9; i++) {
-			if(Map[Monsters[i].Y][Monsters[i].X].Visible == true) {
+			if(Map.Visible(Monsters[i].Y,Monsters[i].X) == true) {
 				mvwaddch(MapWindow,Monsters[i].Y,Monsters[i].X,Monsters[i].Symbol);
 				Monsters[i].Target = &Player;
 			}
@@ -276,19 +314,19 @@ int main() {
 		switch(InKey) {
 			case(KEY_UP):
 				Player.Energy--;
-				Player.TryMove(Player.Y-1, Player.X, Map);
+				Player.TryMove(Player.Y-1, Player.X);
 				break;
 			case(KEY_DOWN):
 				Player.Energy--;
-				Player.TryMove(Player.Y+1, Player.X, Map);
+				Player.TryMove(Player.Y+1, Player.X);
 				break;
 			case(KEY_LEFT):
 				Player.Energy--;
-				Player.TryMove(Player.Y, Player.X-1, Map);
+				Player.TryMove(Player.Y, Player.X-1);
 				break;
 			case(KEY_RIGHT):
 				Player.Energy--;
-				Player.TryMove(Player.Y, Player.X+1, Map);
+				Player.TryMove(Player.Y, Player.X+1);
 				break;
 			case('Q'):
 				Quit=true;
