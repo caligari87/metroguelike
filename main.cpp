@@ -109,16 +109,16 @@ class Actor {
 		void ChaseTarget() {
 			if(Target == nullptr) { return; }
 			if(X < Target->X) {
-				X++;
+				TryMove(Y,X+1);
 			}
 			if(X > Target->X) {
-				X--;
+				TryMove(Y,X-1);
 			}
 			if(Y < Target->Y) {
-				Y++;
+				TryMove(Y+1,X);
 			}
 			if(Y > Target->Y) {
-				Y--;
+				TryMove(Y-1,X);
 			}
 		}
 };
