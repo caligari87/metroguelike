@@ -24,14 +24,11 @@ class MapData {
 		TileData Tiles[MaxRows*MaxCols];
 
 		bool IsWall(int row, int col) {
-			return(!Tiles[row+col*MaxRows].CanWalk &&
-					Tiles[row+col*MaxRows].BlocksVision &&
-					Tiles[row+col*MaxRows].Symbol=='#');
+			return(!Tiles[row+col*MaxRows].CanWalk && Tiles[row+col*MaxRows].BlocksVision && Tiles[row+col*MaxRows].Symbol=='#');
 		}
 
 		bool IsDoor(int row, int col) {
-			return(Tiles[row+col*MaxRows].CanWalk &&
-				   Tiles[row+col*MaxRows].BlocksVision);
+			return(Tiles[row+col*MaxRows].CanWalk && Tiles[row+col*MaxRows].BlocksVision);
 		}
 
 		bool CanWalk(int row, int col) {
