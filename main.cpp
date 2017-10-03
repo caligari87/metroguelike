@@ -128,7 +128,7 @@ void InitializeTerminal() {
 	initscr(); //Initialize ncurses screen
 	curs_set(0); //Turn off cursor
 	keypad(stdscr, true); //Enable the keypad
-	noecho(); //Don't echo getch characters
+	//noecho(); //Don't echo getch characters
 	//box(stdscr,0,0);
 	//getmaxyx(stdscr,MaxRows,MaxCols); //Get maximum window size
 }
@@ -282,13 +282,11 @@ int main() {
 		}
 
 		//Render map
+		wclear(MapWindow);
 		for(int Y=0; Y<MaxRows; Y++) {
 			for(int X=0; X<MaxCols; X++) {
 				if(Map.Seen(Y,X) == true || Map.Visible(Y,X) == true) {
 					mvwaddch(MapWindow,Y,X,Map.Symbol(Y,X));
-				}
-				else {
-					mvwaddch(MapWindow,Y,X,' ');
 				}
 			}
 		}
@@ -304,6 +302,7 @@ int main() {
 		wrefresh(MapWindow);
 
 		//Render Messages/Status
+		wclear(MsgWindow);
 		wmove(MsgWindow,0,0);
 		wvline(MsgWindow,0,MaxRows);
 		mvwprintw(MsgWindow,0,1,"Health: %i",Player.Health);
