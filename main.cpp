@@ -14,9 +14,14 @@ void InitializeTerminal() {
 	initscr(); //Initialize ncurses screen
 	curs_set(0); //Turn off cursor
 	keypad(stdscr, true); //Enable the keypad
-	//noecho(); //Don't echo getch characters
-	//box(stdscr,0,0);
-	//getmaxyx(stdscr,MaxRows,MaxCols); //Get maximum window size
+	//Check that the terminal is big enough
+	if(getmaxx(stdscr)<24 || getmaxy(stdscr)<80) {
+		mvprintw(0,0,"Please use a larger terminal for this program.\nPress any key to continue.");
+		cbreak();
+		getch();
+		endwin();
+		exit(0);
+	}
 }
 
 int main() {
@@ -28,13 +33,6 @@ int main() {
 
 	//Terminal setup and initialization
 	InitializeTerminal();
-	//Check that the terminal is big enough
-	if(getmaxx(stdscr)<MaxCols || getmaxy(stdscr)<MaxRows) {
-		mvprintw(0,0,"Please use a larger terminal for this program.\nPress any key to continue.");
-		cbreak();
-		getch();
-		endwin();
-	}
 
 	//Set up UI "windows"
 	WINDOW * MapWindow = newwin(25,50,0,0);
@@ -47,9 +45,8 @@ int main() {
 	wrefresh(MapWindow);
 	wrefresh(MsgWindow);
 
-	//Wait for keypress
+	//Wait for keypress and clean screen for remainder of program
 	getch();
-	//clean screen
 	clear();
 	refresh();
 
