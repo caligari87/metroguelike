@@ -1,3 +1,7 @@
+const double PI = 3.14159265;
+const int MaxRows = 24;
+const int MaxCols = 50;
+
 #include <ncurses.h>
 #include <cstdlib>
 #include <ctime>
