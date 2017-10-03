@@ -156,10 +156,12 @@ int main() {
 				int CheckY = (double)0.5 + Player.Y + (Dist*sin(Angle*PI/180));
 				int CheckX = (double)0.5 + Player.X + (Dist*cos(Angle*PI/180));
 				if(CheckX<0 || CheckX>MaxCols || CheckY<0 or CheckY>MaxRows) { break; }
-				if(Map.IsWall(CheckY,CheckX) == true || Map.IsDoor(CheckY,CheckX) == true) {
-					Map.SetSeenState(CheckY,CheckX, true);
+				if(Map.LightLevel(CheckY,CheckX) >= Dist) {
+					Map.SetVisibleState(CheckY,CheckX,true);
+					if(Map.IsWall(CheckY,CheckX) == true || Map.IsDoor(CheckY,CheckX) == true) {
+						Map.SetSeenState(CheckY,CheckX, true);
+					}
 				}
-				Map.SetVisibleState(CheckY,CheckX,true);
 				if(Map.BlocksVision(CheckY,CheckX) == true) { break; }
 			}
 		}
