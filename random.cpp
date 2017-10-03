@@ -1,8 +1,6 @@
-#include <cstdlib>
-#include <ctime>
-#include <cmath>
-
+//--------------------------------
 // Friendly random functions, courtesy of dpJudas
+//--------------------------------
 
 // Returns the linear interpolation between a and b, with t being a value between 0 and 1
 double mix(double a, double b, double t) {
