@@ -7,122 +7,8 @@ const int MaxCols = 50;
 #include <ctime>
 #include <cmath>
 #include "random.cpp"
-
-#define PI 3.14159265
-const int MaxRows = 24;
-const int MaxCols = 50;
-
-class TileData {
-	public:
-		//Set everything to "floor" initially
-		bool CanWalk=true;
-		bool BlocksVision=false;
-		char Symbol='.';
-
-		bool Seen=false;
-		bool Visible=false;
-};
-
-class MapData {
-	public:
-		TileData Tiles[MaxRows*MaxCols];
-
-		bool IsWall(int row, int col) {
-			return(!Tiles[row+col*MaxRows].CanWalk && Tiles[row+col*MaxRows].BlocksVision && Tiles[row+col*MaxRows].Symbol=='#');
-		}
-
-		bool IsDoor(int row, int col) {
-			return(Tiles[row+col*MaxRows].CanWalk && Tiles[row+col*MaxRows].BlocksVision);
-		}
-
-		bool CanWalk(int row, int col) {
-			return(Tiles[row+col*MaxRows].CanWalk);
-		}
-
-		bool BlocksVision(int row, int col) {
-			return(Tiles[row+col*MaxRows].BlocksVision);
-		}
-
-		bool Seen(int row, int col) {
-			return(Tiles[row+col*MaxRows].Seen);
-		}
-
-		bool Visible(int row, int col) {
-			return(Tiles[row+col*MaxRows].Visible);
-		}
-
-		char Symbol(int row, int col) {
-			return(Tiles[row+col*MaxRows].Symbol);
-		}
-
-		void SetWall(int row, int col) {
-			Tiles[row+col*MaxRows].CanWalk = false;
-			Tiles[row+col*MaxRows].BlocksVision = true;
-			Tiles[row+col*MaxRows].Symbol = '#';
-		}
-
-		void SetFloor(int row, int col) {
-			Tiles[row+col*MaxRows].CanWalk = true;
-			Tiles[row+col*MaxRows].BlocksVision = false;
-			Tiles[row+col*MaxRows].Symbol = '.';
-		}
-
-		void SetDoor(int row, int col) {
-			Tiles[row+col*MaxRows].CanWalk = true;
-			Tiles[row+col*MaxRows].BlocksVision = true;
-			Tiles[row+col*MaxRows].Symbol = '+';
-		}
-
-		void SetAllNotVisible() {
-			for(int i=0; i<MaxRows*MaxCols; i++) {
-				Tiles[i].Visible = false;
-			}
-		}
-
-		void SetVisibleState(int row, int col, bool value) {
-			Tiles[row+col*MaxRows].Visible = value;
-		}
-
-		void SetSeenState(int row, int col, bool value) {
-			Tiles[row+col*MaxRows].Seen = value;
-		}
-};
-
-class Actor {
-	public:
-		int X,Y;
-		char Symbol;
-
-		int Health;
-		int Energy;
-
-		MapData LocalMap;
-
-		Actor *Target = nullptr;
-
-		void TryMove(int NewY, int NewX) {
-			if(LocalMap.IsWall(NewY,NewX) == false) {
-				Y = NewY;
-				X = NewX;
-			}
-		}
-
-		void ChaseTarget() {
-			if(Target == nullptr) { return; }
-			if(X < Target->X) {
-				TryMove(Y,X+1);
-			}
-			if(X > Target->X) {
-				TryMove(Y,X-1);
-			}
-			if(Y < Target->Y) {
-				TryMove(Y+1,X);
-			}
-			if(Y > Target->Y) {
-				TryMove(Y-1,X);
-			}
-		}
-};
+#include "map.cpp"
+#include "actor.cpp"
 
 void InitializeTerminal() {
 	initscr(); //Initialize ncurses screen
@@ -237,7 +123,7 @@ int main() {
 	}
 
 	//Initialize player
-	Actor Player;
+	PlayerCharacter Player;
 	do {
 		Player.Y = irandom(5,MaxRows-5);
 		Player.X = irandom(5,MaxCols-5);
@@ -249,7 +135,7 @@ int main() {
 	Player.LocalMap = Map;
 
 	//Initialize monsters
-	Actor Monsters[10];
+	NonPlayerCharacter Monsters[10];
 	for(int i=0; i<=9; i++) {
 		do {
 			Monsters[i].Y = irandom(5,MaxRows-5);
