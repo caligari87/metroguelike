@@ -15,7 +15,7 @@ void InitializeTerminal() {
 	curs_set(0); //Turn off cursor
 	keypad(stdscr, true); //Enable the keypad
 	//Check that the terminal is big enough
-	if(getmaxx(stdscr)<24 || getmaxy(stdscr)<80) {
+	if(getmaxx(stdscr)<80 || getmaxy(stdscr)<24) {
 		mvprintw(0,0,"Please use a larger terminal for this program.\nPress any key to continue.");
 		cbreak();
 		getch();
