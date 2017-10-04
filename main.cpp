@@ -152,16 +152,18 @@ int main() {
 		Map.SetAllNotVisible();
 		//Player FOV check
 		for(double Angle=0;Angle<360;Angle+=0.1) {
-			for(int Dist=1;Dist<25;Dist++) {
+			int LastLightLevel=Map.LightLevel(Player.Y,Player.X);
+			for(int Dist=1;Dist<50;Dist++) {
 				int CheckY = (double)0.5 + Player.Y + (Dist*sin(Angle*PI/180));
 				int CheckX = (double)0.5 + Player.X + (Dist*cos(Angle*PI/180));
 				if(CheckX<0 || CheckX>MaxCols || CheckY<0 or CheckY>MaxRows) { break; }
-				if(Map.LightLevel(CheckY,CheckX) >= Dist) {
+				if(Dist<=1 || Map.LightLevel(CheckY,CheckX)>0 || ((Map.IsWall(CheckY,CheckX)==true || Map.IsDoor(CheckY,CheckX)==true) && LastLightLevel>0)) {
 					Map.SetVisibleState(CheckY,CheckX,true);
 					if(Map.IsWall(CheckY,CheckX) == true || Map.IsDoor(CheckY,CheckX) == true) {
 						Map.SetSeenState(CheckY,CheckX, true);
 					}
 				}
+				LastLightLevel = Map.LightLevel(CheckY,CheckX);
 				if(Map.BlocksVision(CheckY,CheckX) == true) { break; }
 			}
 		}
@@ -212,6 +214,10 @@ int main() {
 			case(KEY_RIGHT):
 				Player.Energy--;
 				Player.TryMove(Player.Y, Player.X+1);
+				break;
+			case('l'):
+				Map.SetLightLevel(Player.Y,Player.X,10);
+				Map.UpdateLighting();
 				break;
 			case('Q'):
 				Quit=true;

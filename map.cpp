@@ -11,7 +11,7 @@ class TileData {
 
 		bool Seen=false;
 		bool Visible=false;
-		int LightLevel=1;
+		int LightLevel=0;
 };
 
 class MapData {
@@ -90,5 +90,22 @@ class MapData {
 
 		void SetLightLevel(int row, int col, int value) {
 			Tiles[XYToFlat(row,col)].LightLevel = value;
+		}
+
+		void UpdateLighting() {
+			bool LoopUpdated;
+			do {
+				LoopUpdated = false;
+				for(int row=0; row<MaxRows; row++) {
+					for(int col=0; col<MaxCols; col++) {
+						if(IsWall(row,col) == false && IsDoor(row,col) == false) {
+							if(LightLevel(row,col) <= LightLevel(row-1,col)-2) { SetLightLevel(row, col, LightLevel(row-1,col)-1); LoopUpdated=true; }
+							if(LightLevel(row,col) <= LightLevel(row+1,col)-2) { SetLightLevel(row, col, LightLevel(row+1,col)-1); LoopUpdated=true; }
+							if(LightLevel(row,col) <= LightLevel(row,col-1)-2) { SetLightLevel(row, col, LightLevel(row,col-1)-1); LoopUpdated=true; }
+							if(LightLevel(row,col) <= LightLevel(row,col+1)-2) { SetLightLevel(row, col, LightLevel(row,col+1)-1); LoopUpdated=true; }
+						}
+					}
+				}
+			} while(LoopUpdated == true);
 		}
 };
