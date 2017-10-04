@@ -2,11 +2,23 @@
 // Actor data and functions
 //--------------------------------
 
-class Actor {
+// Simple object class, basically anything that can exist on the map
+class Object {
 	public:
 		int X,Y;
 		char Symbol;
 
+}
+
+class LightSource: public Object {
+	public:
+		int Intensity; //Brightness, obviously
+		int Angle; //Direction the light faces, in degrees
+		int Spread; //Spread, as degrees from the center angle (cone/FOV is spread*2)
+}
+
+class Actor: public Object {
+	public:
 		int Health;
 		int Energy;
 
