@@ -19,7 +19,7 @@ class MapData {
 		TileData Tiles[MaxRows*MaxCols];
 
 		int XYToFlat(int row, int col) {
-			return (XYToFlat(row,col));
+			return (row+col*MaxRows);
 		}
 
 		//Information functions
