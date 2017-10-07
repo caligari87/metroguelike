@@ -156,7 +156,7 @@ int main() {
 			Lights[i].X = irandom(5,MaxCols-5);
 		} while(Map.CanWalk(Lights[i].Y,Lights[i].X) == false);
 		Lights[i].Symbol = '*';
-		//Lights[i].Intensity = irandom(5,10);
+		Lights[i].Intensity = irandom(5,10);
 	}
 
 	//--------------------------------
