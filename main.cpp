@@ -39,12 +39,14 @@ int main() {
 
 	//Set up UI "windows"
 	WINDOW * MapWindow = newwin(25,50,0,0);
-	WINDOW * MsgWindow = newwin(25,30,0,50);
+	WINDOW * MsgWindow = newwin(25,29,0,51);
 	refresh();
 
 	//Debug boundaries
 	box(MapWindow,0,0);
 	box(MsgWindow,0,0);
+	move(0,50);
+	vline(0,MaxRows+1);
 	wrefresh(MapWindow);
 	wrefresh(MsgWindow);
 
@@ -223,12 +225,14 @@ int main() {
 
 		//Render Messages/Status
 		wclear(MsgWindow);
-		wmove(MsgWindow,0,0);
-		wvline(MsgWindow,0,MaxRows);
-		mvwprintw(MsgWindow,0,1,"Health: %i",Player.Health);
-		mvwprintw(MsgWindow,1,1,"Energy: %i",Player.Energy);
-		mvwprintw(MsgWindow,10,1,"KEY NAME : %s - %d\n", keyname(InKey),InKey);
+		mvwprintw(MsgWindow,0,0,"Health: %i",Player.Health);
+		mvwprintw(MsgWindow,1,0,"Energy: %i",Player.Energy);
+		mvwprintw(MsgWindow,10,0,"KEY NAME : %s - %d\n", keyname(InKey),InKey);
 		wrefresh(MsgWindow);
+		//Window border
+		move(0,50);
+		vline(0,MaxRows+1);
+		refresh();
 
 		//Player input checks
 		InKey=getch();
