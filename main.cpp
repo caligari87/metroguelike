@@ -227,28 +227,67 @@ int main() {
 		wvline(MsgWindow,0,MaxRows);
 		mvwprintw(MsgWindow,0,1,"Health: %i",Player.Health);
 		mvwprintw(MsgWindow,1,1,"Energy: %i",Player.Energy);
+		mvwprintw(MsgWindow,10,1,"KEY NAME : %s - %d\n", keyname(InKey),InKey);
 		wrefresh(MsgWindow);
 
 		//Player input checks
 		InKey=getch();
 		switch(InKey) {
+			//Orthagonal movement checks
 			case(KEY_UP):
+			case('k'):
+			//case('8'):
 				Player.Energy--;
 				Player.TryMove(Player.Y-1, Player.X);
 				break;
 			case(KEY_DOWN):
+			case('j'):
+			//case('2'):
 				Player.Energy--;
 				Player.TryMove(Player.Y+1, Player.X);
 				break;
 			case(KEY_LEFT):
+			case('h'):
+			//case('4'):
 				Player.Energy--;
 				Player.TryMove(Player.Y, Player.X-1);
 				break;
 			case(KEY_RIGHT):
+			case('l'):
+			//case('6'):
 				Player.Energy--;
 				Player.TryMove(Player.Y, Player.X+1);
 				break;
-			case('l'):
+			//Diagonal movement checks
+			case(KEY_HOME):
+			case(KEY_SR):
+			case('y'):
+			//case('7'):
+				Player.Energy--;
+				Player.TryMove(Player.Y-1, Player.X-1);
+				break;
+			case(KEY_PPAGE):
+			case(KEY_SRIGHT):
+			case('u'):
+			//case('9'):
+				Player.Energy--;
+				Player.TryMove(Player.Y-1, Player.X+1);
+				break;
+			case(KEY_NPAGE):
+			case(KEY_SF):
+			case('n'):
+			//case('3'):
+				Player.Energy--;
+				Player.TryMove(Player.Y+1, Player.X+1);
+				break;
+			case(KEY_END):
+			case(KEY_SLEFT):
+			case('b'):
+			//case('1'):
+				Player.Energy--;
+				Player.TryMove(Player.Y+1, Player.X-1);
+				break;
+			case('L'):
 				Player.LightIntensity = 10-Player.LightIntensity;
 				break;
 			case('Q'):
