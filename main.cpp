@@ -69,7 +69,7 @@ int main() {
 	//Make DoomRL-style "rooms" map
 	int MadeWalls = 0; //How many walls we've finished
 	int WallAttempts = 0; //How many walls we've tried to make
-	while(MadeWalls<10 || WallAttempts<100) {
+	while(MadeWalls<6 || WallAttempts<100) {
 		WallAttempts++;
 		bool DoBuild = true;
 		//Pick a random spot
