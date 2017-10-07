@@ -10,6 +10,9 @@ const int MaxCols = 50;
 #include "map.cpp"
 #include "actor.cpp"
 
+#define min(x, y)  ((x) < (y) ? (x) : (y))
+#define max(x, y)  ((x) > (y) ? (x) : (y))
+
 void InitializeTerminal() {
 	initscr(); //Initialize ncurses screen
 	curs_set(0); //Turn off cursor
@@ -145,10 +148,32 @@ int main() {
 		Monsters[i].LocalMap = Map;
 	}
 
+	//Initialize lights
+	LightSource Lights[10];
+	for(int i=0; i<=9; i++) {
+		do {
+			Lights[i].Y = irandom(5,MaxRows-5);
+			Lights[i].X = irandom(5,MaxCols-5);
+		} while(Map.CanWalk(Lights[i].Y,Lights[i].X) == false);
+		Lights[i].Symbol = '*';
+		//Lights[i].Intensity = irandom(5,10);
+	}
+
 	//--------------------------------
 	//Main loop
 	//--------------------------------
 	while(!Quit) {
+		//Map Updates
+		//Lighting
+		Map.SetAllLightLevel(0);
+		for(int i=0; i<=9; i++) {
+			Map.SetLightLevel(Lights[i].Y,Lights[i].X,Lights[i].Intensity);
+		}
+		Map.SetLightLevel(Player.Y,Player.X,
+			max(Player.LightIntensity, Map.LightLevel(Player.Y,Player.X)));
+		Map.UpdateLighting();
+
+		//FOV
 		Map.SetAllNotVisible();
 		//Player FOV check
 		for(double Angle=0;Angle<360;Angle+=0.1) {
@@ -179,12 +204,20 @@ int main() {
 		}
 
 		//Render actors
+		//Light sources
+		for(int i=0; i<=9; i++) {
+			if(Map.Visible(Lights[i].Y,Lights[i].X) == true) {
+				mvwaddch(MapWindow,Lights[i].Y,Lights[i].X,Lights[i].Symbol);
+			}
+		}
+		//Monsters
 		for(int i=0; i<=9; i++) {
 			if(Map.Visible(Monsters[i].Y,Monsters[i].X) == true) {
 				mvwaddch(MapWindow,Monsters[i].Y,Monsters[i].X,Monsters[i].Symbol);
 				Monsters[i].Target = &Player;
 			}
 		}
+		//Player
 		mvwaddch(MapWindow,Player.Y,Player.X,Player.Symbol);
 		wrefresh(MapWindow);
 
@@ -216,8 +249,7 @@ int main() {
 				Player.TryMove(Player.Y, Player.X+1);
 				break;
 			case('l'):
-				Map.SetLightLevel(Player.Y,Player.X,10);
-				Map.UpdateLighting();
+				Player.LightIntensity = 10-Player.LightIntensity;
 				break;
 			case('Q'):
 				Quit=true;

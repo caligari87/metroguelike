@@ -92,6 +92,12 @@ class MapData {
 			Tiles[XYToFlat(row,col)].LightLevel = value;
 		}
 
+		void SetAllLightLevel(int NewLightLevel) {
+			for(int i=0; i<MaxRows*MaxCols; i++) {
+				Tiles[i].LightLevel = NewLightLevel;
+			}
+		}
+
 		void UpdateLighting() {
 			bool LoopUpdated;
 			do {
@@ -99,10 +105,16 @@ class MapData {
 				for(int row=0; row<MaxRows; row++) {
 					for(int col=0; col<MaxCols; col++) {
 						if(IsWall(row,col) == false && IsDoor(row,col) == false) {
+							//Orthagonal
 							if(LightLevel(row,col) <= LightLevel(row-1,col)-2) { SetLightLevel(row, col, LightLevel(row-1,col)-1); LoopUpdated=true; }
 							if(LightLevel(row,col) <= LightLevel(row+1,col)-2) { SetLightLevel(row, col, LightLevel(row+1,col)-1); LoopUpdated=true; }
 							if(LightLevel(row,col) <= LightLevel(row,col-1)-2) { SetLightLevel(row, col, LightLevel(row,col-1)-1); LoopUpdated=true; }
 							if(LightLevel(row,col) <= LightLevel(row,col+1)-2) { SetLightLevel(row, col, LightLevel(row,col+1)-1); LoopUpdated=true; }
+							//Diagonal
+							/*if(LightLevel(row,col) <= LightLevel(row-1,col-1)-2) { SetLightLevel(row, col, LightLevel(row-1,col-1)-1); LoopUpdated=true; }
+							if(LightLevel(row,col) <= LightLevel(row+1,col-1)-2) { SetLightLevel(row, col, LightLevel(row+1,col-1)-1); LoopUpdated=true; }
+							if(LightLevel(row,col) <= LightLevel(row-1,col+1)-2) { SetLightLevel(row, col, LightLevel(row-1,col+1)-1); LoopUpdated=true; }
+							if(LightLevel(row,col) <= LightLevel(row+1,col+1)-2) { SetLightLevel(row, col, LightLevel(row+1,col+1)-1); LoopUpdated=true; }*/
 						}
 					}
 				}

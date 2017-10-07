@@ -36,7 +36,8 @@ class Actor: public Object {
 };
 
 class PlayerCharacter: public Actor {
-
+	public:
+		int LightIntensity = 0;
 };
 
 class NonPlayerCharacter: public Actor {
